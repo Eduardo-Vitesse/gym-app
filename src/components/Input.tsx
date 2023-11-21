@@ -9,7 +9,6 @@ export function Input({ ...rest }: IInputProps) {
       borderWidth={0}
       fontSize={"md"}
       color={"white"}
-      fontStyle={"body"}
       mb={4}
       placeholderTextColor={"gray.300"}
       _focus={{

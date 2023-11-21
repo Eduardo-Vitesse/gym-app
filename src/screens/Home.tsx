@@ -1,7 +1,11 @@
 import { useState } from "react";
+import { FlatList, HStack, Heading, Text, VStack } from "native-base";
+import { useNavigation } from "@react-navigation/native";
+
 import { Group } from "@components/Group";
 import { HomeHeader } from "@components/HomeHeader";
-import { FlatList, HStack, Heading, Text, VStack } from "native-base";
+import { ExerciseCard } from "@components/ExerciseCard";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
 export function Home() {
   const [groups, setGroups] = useState([
@@ -10,7 +14,20 @@ export function Home() {
     "Tríceps",
     "Ombro",
   ]);
-  const [groupSelected, setGroupSelected] = useState("costa");
+  const [exercises, setExercises] = useState([
+    "Puxada frontal",
+    "Remada curvada",
+    "Remada unilateral",
+    "Levantamento terra",
+  ]);
+  const [groupSelected, setGroupSelected] = useState("costas");
+
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
+
+  function handleOpenExerciseDetails() {
+    navigation.navigate("exercise");
+  }
+
   return (
     <VStack flex={1}>
       <HomeHeader />
@@ -21,7 +38,7 @@ export function Home() {
         renderItem={({ item }) => (
           <Group
             name={item}
-            isActive={groupSelected === item}
+            isActive={groupSelected.toUpperCase() === item.toUpperCase()}
             onPress={() => setGroupSelected(item)}
           />
         )}
@@ -30,6 +47,7 @@ export function Home() {
         _contentContainerStyle={{ px: 8 }}
         my={10}
         maxH={10}
+        minH={10}
       />
 
       <VStack flex={1} px={8}>
@@ -38,9 +56,19 @@ export function Home() {
             Exercícios
           </Heading>
           <Text color={"gray.200"} fontSize={"sm"}>
-            4
+            {exercises.length}
           </Text>
         </HStack>
+
+        <FlatList
+          data={exercises}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <ExerciseCard onPress={handleOpenExerciseDetails} />
+          )}
+          showsVerticalScrollIndicator={false}
+          _contentContainerStyle={{ paddingBottom: 10 }}
+        />
       </VStack>
     </VStack>
   );
