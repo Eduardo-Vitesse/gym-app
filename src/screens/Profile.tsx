@@ -1,3 +1,4 @@
+import { TouchableOpacity } from "react-native";
 import { useState } from "react";
 import {
   Center,
@@ -7,10 +8,10 @@ import {
   Text,
   Heading,
 } from "native-base";
+import * as ImagePicker from "expo-image-picker";
 
 import { ScreenHeader } from "@components/ScreenHeader";
 import { UserPhoto } from "@components/UserPhoto";
-import { TouchableOpacity } from "react-native";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
@@ -18,6 +19,29 @@ const PHOTO_SIZE = 33;
 
 export function Profile() {
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
+  const [userPhoto, setUserPhoto] = useState(
+    "https://github.com/Eduardo-Vitesse.png"
+  );
+
+  async function handleUserPhotoSelect() {
+    try {
+      setPhotoIsLoading(true);
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+      });
+      if (photoSelected.canceled) return;
+      if (photoSelected.assets[0].uri) {
+        setUserPhoto(photoSelected.assets[0].uri);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setPhotoIsLoading(false);
+    }
+  }
 
   return (
     <VStack flex={1}>
@@ -33,14 +57,10 @@ export function Profile() {
               endColor={"gray.400"}
             />
           ) : (
-            <UserPhoto
-              source={{ uri: "https://github.com/Eduardo-Vitesse.png" }}
-              alt=""
-              size={PHOTO_SIZE}
-            />
+            <UserPhoto source={{ uri: userPhoto }} alt="" size={PHOTO_SIZE} />
           )}
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleUserPhotoSelect}>
             <Text
               color={"green.500"}
               fontWeight={"bold"}
@@ -58,6 +78,7 @@ export function Profile() {
           <Heading
             color={"gray.200"}
             fontSize={"md"}
+            fontFamily={"heading"}
             mb={2}
             alignSelf={"flex-start"}
             mt={12}
